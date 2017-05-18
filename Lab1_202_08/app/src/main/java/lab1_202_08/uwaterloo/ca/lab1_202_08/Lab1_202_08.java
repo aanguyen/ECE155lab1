@@ -26,9 +26,15 @@ public class Lab1_202_08 extends AppCompatActivity {
         tv1.setText("This is another line of text!");
         rl.addView(tv1);
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
         Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        SensorEventListener l = new LightSensorEventListener(tv);
-        sensorManager.registerListener(l, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        SensorEventListener light = new LightSensorEventListener(tv);
+        sensorManager.registerListener(light, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        TextView accelerometerText = (TextView) findViewById(R.id.accelerometerLabel);
+        Sensor accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        SensorEventListener accelerometer = new AccelerometerSensorEventListener(accelerometerText);
+        sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
 }
@@ -37,6 +43,7 @@ class LightSensorEventListener implements SensorEventListener {
     private TextView output;
 
     public LightSensorEventListener(TextView outputView){
+
         output = outputView;
     }
     public void onAccuracyChanged(Sensor s, int i){}
@@ -44,7 +51,28 @@ class LightSensorEventListener implements SensorEventListener {
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_LIGHT){
             float lightValue = se.values[0];
-            output.setText(String.valueOf(lightValue));
+            String lightMessage = "The Light Sensor Reading is:\n" +  String.valueOf(lightValue);
+            output.setText(lightMessage);
+        }
+    }
+}
+
+class AccelerometerSensorEventListener implements SensorEventListener {
+    private TextView output;
+
+    public AccelerometerSensorEventListener(TextView outputView) {
+
+        output = outputView;
+
+    }
+
+    public void onAccuracyChanged(Sensor s, int i){}
+
+    public void onSensorChanged(SensorEvent se) {
+        if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            float accelerometerValue = se.values[0];
+            String accelerometerMessage = "The Accelerometer Sensor Reading is:\n" +  String.valueOf(accelerometerValue);
+            output.setText(accelerometerMessage);
         }
     }
 }
