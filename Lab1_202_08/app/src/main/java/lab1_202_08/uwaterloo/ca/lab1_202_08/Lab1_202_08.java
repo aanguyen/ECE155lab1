@@ -17,19 +17,19 @@ public class Lab1_202_08 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_lab1_202_08);
-        TextView tv = (TextView) findViewById(R.id.label1);
-        tv.setText("I've replaced the text!");
-        LinearLayout rl = (LinearLayout) findViewById(R.id.linearLayout);
-        TextView tv1 = new TextView(getApplicationContext());
-        tv1.setTextColor(Color.MAGENTA);
-        tv1.setText("This is another line of text!");
-        rl.addView(tv1);
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+        TextView lightText = (TextView) findViewById(R.id.lightFieldText);
         Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        SensorEventListener light = new LightSensorEventListener(tv);
+        SensorEventListener light = new LightSensorEventListener(lightText);
         sensorManager.registerListener(light, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        TextView magneticFieldText = (TextView) findViewById(R.id.magneticFieldText);
+        Sensor magneticFieldSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        SensorEventListener magneticField = new MagneticSensorEventListener(magneticFieldText);
+        sensorManager.registerListener(magneticField, magneticFieldSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         TextView accelerometerText = (TextView) findViewById(R.id.accelerometerLabel);
         Sensor accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -37,6 +37,24 @@ public class Lab1_202_08 extends AppCompatActivity {
         sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
+}
+
+class MagneticSensorEventListener implements SensorEventListener {
+    private TextView output;
+
+    public MagneticSensorEventListener(TextView outputView){
+        output = outputView;
+    }
+    public void onAccuracyChanged(Sensor s, int i){}
+
+    public void onSensorChanged(SensorEvent se) {
+        if (se.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+            float magneticFieldValue1 = se.values[0];
+            float magneticFieldValue2 = se.values[1];
+            float magneticFieldValue3 = se.values[2];
+            output.setText("The Magnetic Sensor Reading is: \n(" + String.format("%.2f", se.values[0]) + ", " + String.format("%.2f", se.values[1]) + ", " + String.format("%.2f", se.values[2]) + ")");
+        }
+    }
 }
 
 class LightSensorEventListener implements SensorEventListener {

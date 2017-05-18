@@ -14,7 +14,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/label1"
+        android:id="@+id/lightFieldText"
         app:layout_constraintHorizontal_bias="0.194" />
     <TextView
         android:layout_width="wrap_content"
@@ -27,6 +27,17 @@
         android:id="@+id/accelerometerLabel"
         app:layout_constraintVertical_bias="0.617"
         app:layout_constraintHorizontal_bias="0.194" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Magnetic Field"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/magneticFieldText"
+        app:layout_constraintVertical_bias="0.722"
+        app:layout_constraintHorizontal_bias="0.204" />
     <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/scroll"
