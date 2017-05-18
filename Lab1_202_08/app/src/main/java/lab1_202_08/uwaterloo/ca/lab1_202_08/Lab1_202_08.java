@@ -35,6 +35,11 @@ public class Lab1_202_08 extends AppCompatActivity {
         Sensor accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         SensorEventListener accelerometer = new AccelerometerSensorEventListener(accelerometerText);
         sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        TextView rotationVectorText = (TextView) findViewById(R.id.rotationVectorLabel1);
+        Sensor rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        SensorEventListener rotationVector = new RotataionVectorSensorEventListener(rotationVectorText);
+        sensorManager.registerListener(rotationVector, rotationVectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
 }
@@ -88,9 +93,33 @@ class AccelerometerSensorEventListener implements SensorEventListener {
 
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
-            float accelerometerValue = se.values[0];
-            String accelerometerMessage = "The Accelerometer Sensor Reading is:\n" +  String.valueOf(accelerometerValue);
+            //float xValue = se.values[0];
+            //float yValue = se.values[1];
+            //float zValue = se.values[2];
+            String accelerometerMessage = "The Accelerometer Sensor Reading is:\n(" +  (String.format("%.2f", se.values[0])) + ", " + (String.format("%.2f", se.values[1])) + ", " + (String.format("%.2f", se.values[1])) + ")";
             output.setText(accelerometerMessage);
+        }
+    }
+}
+
+class RotataionVectorSensorEventListener implements SensorEventListener {
+    private TextView output;
+
+    public RotataionVectorSensorEventListener(TextView outputView) {
+
+        output = outputView;
+
+    }
+
+    public void onAccuracyChanged(Sensor s, int i){}
+
+    public void onSensorChanged(SensorEvent se) {
+        if (se.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR){
+            //float xValue = se.values[0];
+            //float yValue = se.values[1];
+            //float zValue = se.values[2];
+            String rotationVectorMessage = "The Rotation Vector Sensor Reading is:\n(" +  (String.format("%.2f", se.values[0])) + ", " + (String.format("%.2f", se.values[1])) + ", " + (String.format("%.2f", se.values[1])) + ")";
+            output.setText(rotationVectorMessage);
         }
     }
 }
