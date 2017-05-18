@@ -7,26 +7,52 @@
     tools:context="lab1_202_08.uwaterloo.ca.lab1_202_08.Lab1_202_08">
 
     <TextView
+        android:id="@+id/lightFieldMaxText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="LightFieldMax"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.202"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/lightFieldText"
-        app:layout_constraintHorizontal_bias="0.194" />
+        app:layout_constraintVertical_bias="0.536" />
+
     <TextView
+        android:id="@+id/lightFieldText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="lightField"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.182"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/accelerometerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accelerometer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.206"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/accelerometerLabel"
-        app:layout_constraintVertical_bias="0.617"
-        app:layout_constraintHorizontal_bias="0.194" />
+        app:layout_constraintVertical_bias="0.617" />
+
+    <TextView
+        android:id="@+id/accelerometerMaxText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AccelerometerMax"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.226"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.651" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,20 +62,45 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/magneticFieldText"
-        app:layout_constraintVertical_bias="0.722"
+        app:layout_constraintVertical_bias="0.732"
         app:layout_constraintHorizontal_bias="0.204" />
 
     <TextView
+        android:id="@+id/magneticFieldMaxText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="MagneticFieldMax"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.222"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/rotationVectorLabel1"
-        app:layout_constraintHorizontal_bias="0.194"
-        app:layout_constraintVertical_bias="0.827" />
+        app:layout_constraintVertical_bias="0.767" />
+
+    <TextView
+        android:id="@+id/rotationVectorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rotationVector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.204"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.844" />
+
+    <TextView
+        android:id="@+id/rotationVectorMaxText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rotationVectorMax"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.225"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.88" />
+
     <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/scroll"
