@@ -77,9 +77,9 @@ class LightSensorEventListener implements SensorEventListener {
 class AccelerometerSensorEventListener implements SensorEventListener {
     private TextView output;
     private TextView outMax;
-    private float maxX = -999.9f;
-    private float maxY = -999.9f;
-    private float maxZ = -999.9f;
+    private float maxX = -999.999f;
+    private float maxY = -999.999f;
+    private float maxZ = -999.999f;
 
     public AccelerometerSensorEventListener(TextView outputView, TextView outputMax) {
         output = outputView;
@@ -92,11 +92,23 @@ class AccelerometerSensorEventListener implements SensorEventListener {
 
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            boolean changed = false;
             output.setText("The Accelerometer Sensor Reading is:\n(" +  (String.format("%.2f", se.values[0])) + ", " + (String.format("%.2f", se.values[1])) + ", " + (String.format("%.2f", se.values[2])) + ")");
-            if (se.values[0] > maxX || se.values[1] > maxY || se.values[2] > maxZ) {
-                //code to change outMax here
-                //the condition inside if loop might be wrong
+            String maxText = "The Maximum Accelerometer Sensor Reading is:\n(" + (String.format("%.2f", maxX)) + ", " + (String.format("%.2f", maxY)) + ", " + (String.format("%.2f", maxZ)) + ")";
+            if (se.values[0] > maxX) {
+                maxX = se.values[0];
+                changed = true;
             }
+            if (se.values[1] > maxY) {
+                maxY = se.values[1];
+                changed = true;
+            }
+            if (se.values[2] > maxZ) {
+                maxZ = se.values[2];
+                changed = true;
+            }
+            if (changed)
+                outMax.setText(maxText);
         }
     }
 }
@@ -118,10 +130,24 @@ class MagneticSensorEventListener implements SensorEventListener {
 
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+            boolean changed = false;
             output.setText("The Magnetic Sensor Reading is: \n(" + String.format("%.2f", se.values[0]) + ", " + String.format("%.2f", se.values[1]) + ", " + String.format("%.2f", se.values[2]) + ")");
-            if (se.values[0] > maxX || se.values[1] > maxY || se.values[2] > maxZ) {
-                //same as above
+            String maxText = "The Maximum Magnetic Sensor Reading is:\n(" + (String.format("%.2f", maxX)) + ", " + (String.format("%.2f", maxY)) + ", " + (String.format("%.2f", maxZ)) + ")";
+            if (se.values[0] > maxX) {
+                maxX = se.values[0];
+                changed = true;
             }
+            if (se.values[1] > maxY) {
+                maxY = se.values[1];
+                changed = true;
+            }
+            if (se.values[2] > maxZ) {
+                maxZ = se.values[2];
+                changed = true;
+            }
+            if (changed)
+                outMax.setText(maxText);
+
         }
     }
 }
@@ -144,10 +170,23 @@ class RotataionVectorSensorEventListener implements SensorEventListener {
 
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR){
+            boolean changed = false;
             output.setText("The Rotation Vector Sensor Reading is:\n(" +  (String.format("%.2f", se.values[0])) + ", " + (String.format("%.2f", se.values[1])) + ", " + (String.format("%.2f", se.values[2])) + ")");
-            if (se.values[0] > maxX || se.values[1] > maxY || se.values[2] > maxZ) {
-                //same as above
+            String maxText = "The Maximum Rotation Vector Sensor Reading is:\n(" + (String.format("%.2f", maxX)) + ", " + (String.format("%.2f", maxY)) + ", " + (String.format("%.2f", maxZ)) + ")";
+            if (se.values[0] > maxX) {
+                maxX = se.values[0];
+                changed = true;
             }
+            if (se.values[1] > maxY) {
+                maxY = se.values[1];
+                changed = true;
+            }
+            if (se.values[2] > maxZ) {
+                maxZ = se.values[2];
+                changed = true;
+            }
+            if (changed)
+                outMax.setText(maxText);
         }
     }
 }
