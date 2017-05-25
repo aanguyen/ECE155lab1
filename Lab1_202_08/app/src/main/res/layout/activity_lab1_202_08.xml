@@ -6,11 +6,28 @@
     android:layout_height="match_parent"
     tools:context="lab1_202_08.uwaterloo.ca.lab1_202_08.Lab1_202_08">
 
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+    </ScrollView>
+
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline"
+        app:layout_constraintGuide_begin="41dp"
+        android:orientation="vertical" />
+
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="199dp">
 
         <TextView
             android:id="@+id/lightFieldText"
@@ -20,7 +37,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/lightFieldMaxText"
@@ -55,14 +72,14 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/magneticFieldText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Magnetic Field"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/magneticFieldText"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/magneticFieldMaxText"
@@ -91,22 +108,15 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scroll"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-    </ScrollView>
-
-    <android.support.constraint.Guideline
+    <Button
+        android:id="@+id/fileButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/guideline"
-        app:layout_constraintGuide_begin="41dp"
-        android:orientation="vertical" />
+        android:text="Generate CSV Record for Acc. Sen."
+        tools:layout_editor_absoluteX="53dp"
+        tools:layout_editor_absoluteY="151dp" />
 </android.support.constraint.ConstraintLayout>

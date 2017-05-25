@@ -8,18 +8,54 @@ import android.hardware.SensorManager;
 import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 public class Lab1_202_08 extends AppCompatActivity {
 
+    private void writeToFile() {
+        File myFile = null;
+        PrintWriter myPrinter = null;
+        try {
+            //Open/create Output.csv in the folder "Lab1_202_08"
+            myFile = new File(getExternalFilesDir("Lab1_202_08"), "Output.csv");
+
+            //Initialize a new printwriter to write to file
+            myPrinter = new PrintWriter(myFile);
+
+            myPrinter.println("test string for the file, insert csv here!!!!!!"); //INSERT CSV CODE HERE SOMEHOW...
+        } catch (IOException e) {
+            Log.d("Lab 1 Error:", e.toString());
+        } finally {
+            if (myPrinter != null) {
+                myPrinter.close();
+            }
+            Log.d("Lab 1: ", "File writing complete.");
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_lab1_202_08);
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        Button fileButton = (Button) findViewById(R.id.fileButton);
+        fileButton.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View v) {
+                        writeToFile();
+                    }
+                }
+        );
 
         TextView lightText = (TextView) findViewById(R.id.lightFieldText);
         TextView lightMax = (TextView) findViewById(R.id.lightFieldMaxText);
