@@ -44,7 +44,6 @@ public class Lab1_202_08 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_lab1_202_08);
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -81,6 +80,11 @@ public class Lab1_202_08 extends AppCompatActivity {
         SensorEventListener rotationVector = new RotataionVectorSensorEventListener(rotationVectorText, rotationVectorMax);
         sensorManager.registerListener(rotationVector, rotationVectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        TextView lightMax = (TextView) findViewById(R.id.lightFieldMaxText);
+        savedInstanceState.putString("maxLight", lightMax.getText().toString());
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
 }
 
@@ -105,6 +109,7 @@ class LightSensorEventListener implements SensorEventListener {
             if (se.values[0] > maxLight) {
                 maxLight = se.values[0];
                 outMax.setText("The Highest Light Sensor Reading is:\n" + String.valueOf(maxLight));
+
             }
         }
     }

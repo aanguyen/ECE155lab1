@@ -25,9 +25,14 @@
         android:id="@+id/linearLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="199dp">
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/fileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Generate CSV Record for Acc. Sen."
+            />
 
         <TextView
             android:id="@+id/lightFieldText"
@@ -112,11 +117,4 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/fileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Generate CSV Record for Acc. Sen."
-        tools:layout_editor_absoluteX="53dp"
-        tools:layout_editor_absoluteY="151dp" />
 </android.support.constraint.ConstraintLayout>
