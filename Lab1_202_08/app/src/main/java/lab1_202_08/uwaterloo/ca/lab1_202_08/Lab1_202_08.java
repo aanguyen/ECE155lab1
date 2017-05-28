@@ -38,12 +38,6 @@ public class Lab1_202_08 extends AppCompatActivity {
     TextView rotationVectorText;
     TextView rotationVectorMaxText;
     TextView rotationVectorMaxNumber;
-    
-    //Commented out code was the SavedInstance bundle not working.
-    //App would crash every time orientation was changed.
-    //The saved instance bundles are still here, but for now, the code that affects other code is commented out.
-    //The app doesn't crash anymore, but it still gets its data wiped out every new instance.
-    //float maxLightFloat = 0.0f;
 
     private void writeToFile() {
         File myFile;
@@ -70,6 +64,10 @@ public class Lab1_202_08 extends AppCompatActivity {
         setContentView(R.layout.activity_lab1_202_08);
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+        //Create all the needed TextViews
+        //Do you guys think this qualifies as code duplication? I feel like some code could be deleted
+        //By creating a function that sets all the things for us, but to me it feels like that's time
+        //That could be better used to do other things
         LinearLayout LL = (LinearLayout) findViewById(R.id.linearLayout);
         lightText = new TextView(getApplicationContext());
         lightText.setTextColor(Color.WHITE);
@@ -129,11 +127,13 @@ public class Lab1_202_08 extends AppCompatActivity {
         );
 
         if(savedInstanceState != null){
+            //Save all the max readings, and stores them with in a key-value pair
             lightMaxNumber.setText(savedInstanceState.getString("maxLight"));
             accelerometerMaxNumber.setText(savedInstanceState.getString("maxAccelerometer"));
             magneticFieldMaxNumber.setText(savedInstanceState.getString("maxMagneticSensor"));
             rotationVectorMaxNumber.setText(savedInstanceState.getString("maxRotationSensor"));
         }
+
         Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         SensorEventListener light = new LightSensorEventListener(lightText, lightMaxNumber);
         sensorManager.registerListener(light, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -202,6 +202,7 @@ class AccelerometerSensorEventListener implements SensorEventListener {
     public AccelerometerSensorEventListener(TextView outputView, TextView outputMax) {
         output = outputView;
         outMax = outputMax;
+        //If the maxValue for the sensor exists, then use regex to extract the relevant information
         if (!outMax.getText().toString().equals("0")){
             String maxData = outMax.getText().toString();
             Pattern patternX = Pattern.compile("\\(([0-9.]*?)\\,");
@@ -210,12 +211,15 @@ class AccelerometerSensorEventListener implements SensorEventListener {
             Matcher matcherY = patternY.matcher(maxData);
             Pattern patternZ = Pattern.compile("\\,([0-9.]*?)\\)");
             Matcher matcherZ = patternZ.matcher(maxData);
+            //matcherX finds the number between ( and ,
             if (matcherX.find()) {
                 maxX = Float.parseFloat(matcherX.group(1));
             }
+            //matcherY finds the number between , and ,
             if (matcherY.find()) {
                 maxY = Float.parseFloat(matcherY.group(1));
             }
+            //matcherZ finds the number between , and )
             if (matcherZ.find()) {
                 maxZ = Float.parseFloat(matcherZ.group(1));
             }
@@ -229,8 +233,8 @@ class AccelerometerSensorEventListener implements SensorEventListener {
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
             boolean changed = false;
-            output.setText("The Accelerometer Sensor Reading is:\n(" +  (String.format("%.2f", se.values[0])) + ", " + (String.format("%.2f", se.values[1])) + ", " + (String.format("%.2f", se.values[2])) + ")");
-            String maxText = "(" + (String.format("%.2f", maxX)) + ", " + (String.format("%.2f", maxY)) + ", " + (String.format("%.2f", maxZ)) + ")";
+            output.setText("The Accelerometer Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
+            String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
             if (se.values[0] > maxX) {
                 maxX = se.values[0];
                 changed = true;
@@ -285,8 +289,8 @@ class MagneticSensorEventListener implements SensorEventListener {
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
             boolean changed = false;
-            output.setText("The Magnetic Sensor Reading is: \n(" + String.format("%.2f", se.values[0]) + ", " + String.format("%.2f", se.values[1]) + ", " + String.format("%.2f", se.values[2]) + ")");
-            String maxText = "(" + (String.format("%.2f", maxX)) + ", " + (String.format("%.2f", maxY)) + ", " + (String.format("%.2f", maxZ)) + ")";
+            output.setText("The Magnetic Sensor Reading is: \n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
+            String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
             if (se.values[0] > maxX) {
                 maxX = se.values[0];
                 changed = true;
@@ -343,8 +347,8 @@ class RotationalVectorSensorEventListener implements SensorEventListener {
     public void onSensorChanged(SensorEvent se) {
         if (se.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR){
             boolean changed = false;
-            output.setText("The Rotation Vector Sensor Reading is:\n(" +  (String.format("%.2f", se.values[0])) + ", " + (String.format("%.2f", se.values[1])) + ", " + (String.format("%.2f", se.values[2])) + ")");
-            String maxText = "(" + (String.format("%.2f", maxX)) + ", " + (String.format("%.2f", maxY)) + ", " + (String.format("%.2f", maxZ)) + ")";
+            output.setText("The Rotation Vector Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
+            String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
             if (se.values[0] > maxX) {
                 maxX = se.values[0];
                 changed = true;
