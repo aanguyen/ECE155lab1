@@ -16,43 +16,50 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ca.uwaterloo.sensortoy.LineGraphView;
+
+import static lab1_202_08.uwaterloo.ca.lab1_202_08.Lab1_202_08.accelReadings;
+
 
 public class Lab1_202_08 extends AppCompatActivity {
+    String FOLDER_NAME = "Output_Files";
+    String FILE_NAME = "Output.csv";
+    public static Queue accelReadings = new LinkedList();
+    //I put all the TextView and Graph at the top to make them global variables in the bundle
+    TextView lightText, lightMaxText, lightMaxNumber;
+    TextView accelerometerText, accelerometerMaxText, accelerometerMaxNumber;
+    TextView magneticFieldText, magneticFieldMaxText, magneticFieldMaxNumber;
+    TextView rotationVectorText, rotationVectorMaxText, rotationVectorMaxNumber;
 
-    //I put all the TextView at the top to make them global variables in the bundle
-    TextView lightText;
-    TextView lightMaxText;
-    TextView lightMaxNumber;
-
-    TextView accelerometerText;
-    TextView accelerometerMaxText;
-    TextView accelerometerMaxNumber;
-
-    TextView magneticFieldText;
-    TextView magneticFieldMaxText;
-    TextView magneticFieldMaxNumber;
-
-    TextView rotationVectorText;
-    TextView rotationVectorMaxText;
-    TextView rotationVectorMaxNumber;
+    LineGraphView graph;
 
     private void writeToFile() {
         File myFile;
         PrintWriter myPrinter = null;
         try {
             //Open/create Output.csv in the folder "Lab1_202_08"
-            myFile = new File(getExternalFilesDir("Lab1_202_08"), "Output.csv");
+            myFile = new File(getExternalFilesDir(FOLDER_NAME), FILE_NAME);
             //Initialize a new printWriter to write to file
             myPrinter = new PrintWriter(myFile);
 
-            myPrinter.println("test string for the file, insert csv here!!!!!!"); //INSERT CSV CODE HERE SOMEHOW...
+            ArrayList listValues = new ArrayList(accelReadings);
+
+            for (int i = 0; i < listValues.size(); i++) {   //Size theoretically can be hardcoded to 100 but we'll just be safe here
+                float[] toPrint = (float[]) listValues.get(i);
+                myPrinter.println(String.format("%f,%f,%f", toPrint[0], toPrint[1], toPrint[2]));
+            }
         } catch (IOException e) {
             Log.d("Lab 1 Error:", e.toString());
         } finally {
             if (myPrinter != null) {
+                myPrinter.flush();
                 myPrinter.close();
             }
             Log.d("Lab 1: ", "File writing complete.");
@@ -117,6 +124,10 @@ public class Lab1_202_08 extends AppCompatActivity {
         rotationVectorMaxNumber.setTextColor(Color.WHITE);
         LL.addView(rotationVectorMaxNumber);
 
+        graph = new LineGraphView(getApplicationContext(), 100, Arrays.asList("x", "y", "z"));
+        LL.addView(graph); //addView adds the graph to the linear layout
+        graph.setVisibility(View.VISIBLE);
+
         Button fileButton = (Button) findViewById(R.id.fileButton);
         fileButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -125,15 +136,13 @@ public class Lab1_202_08 extends AppCompatActivity {
                     }
                 }
         );
-
+        //Save all the max readings, and stores them with in a key-value pair
         if(savedInstanceState != null){
-            //Save all the max readings, and stores them with in a key-value pair
             lightMaxNumber.setText(savedInstanceState.getString("maxLight"));
             accelerometerMaxNumber.setText(savedInstanceState.getString("maxAccelerometer"));
             magneticFieldMaxNumber.setText(savedInstanceState.getString("maxMagneticSensor"));
             rotationVectorMaxNumber.setText(savedInstanceState.getString("maxRotationSensor"));
         }
-
         Sensor lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         SensorEventListener light = new LightSensorEventListener(lightText, lightMaxNumber);
         sensorManager.registerListener(light, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -159,211 +168,228 @@ public class Lab1_202_08 extends AppCompatActivity {
         savedInstanceState.putString("maxRotationSensor", rotationVectorMaxNumber.getText().toString());
     }
 
-}
 
-//Note: All se.values are given to us by Android OS as floats
-class LightSensorEventListener implements SensorEventListener {
-    private TextView output;
-    private TextView outMax;
-    private float maxLight = 0;
-    //do we have to initialize these TextViews to null?
 
-   // public LightSensorEventListener(TextView outputView, TextView outputMax, float maxLightFloat){
-    public LightSensorEventListener(TextView outputView, TextView outputMax){
-        outMax = outputMax;
-        output = outputView;
-        if (Float.parseFloat(outMax.getText().toString()) != 0){
-            maxLight = Float.parseFloat(outMax.getText().toString());
-        }
-    }
-    public void onAccuracyChanged(Sensor s, int i){
+    //Note: All se.values are given to us by Android OS as floats
+    class LightSensorEventListener implements SensorEventListener {
+        private TextView output;
+        private TextView outMax;
+        private float maxLight = 0;
+        //do we have to initialize these TextViews to null?
 
-    }
-
-    public void onSensorChanged(SensorEvent se) {
-        if (se.sensor.getType() == Sensor.TYPE_LIGHT){
-            output.setText("The Light Sensor Reading is:\n" +  String.valueOf(se.values[0]));
-            if (se.values[0] > maxLight) {
-                maxLight = se.values[0];
-                outMax.setText(String.valueOf(maxLight));
-
+        // public LightSensorEventListener(TextView outputView, TextView outputMax, float maxLightFloat){
+        public LightSensorEventListener(TextView outputView, TextView outputMax){
+            outMax = outputMax;
+            output = outputView;
+            if (Float.parseFloat(outMax.getText().toString()) != 0){
+                maxLight = Float.parseFloat(outMax.getText().toString());
             }
         }
-    }
-}
+        public void onAccuracyChanged(Sensor s, int i){
 
-class AccelerometerSensorEventListener implements SensorEventListener {
-    private TextView output;
-    private TextView outMax;
-    private float maxX = -999.999f;
-    private float maxY = -999.999f;
-    private float maxZ = -999.999f;
+        }
 
-    public AccelerometerSensorEventListener(TextView outputView, TextView outputMax) {
-        output = outputView;
-        outMax = outputMax;
-        //If the maxValue for the sensor exists, then use regex to extract the relevant information
-        if (!outMax.getText().toString().equals("0")){
-            String maxData = outMax.getText().toString();
-            Pattern patternX = Pattern.compile("\\(([0-9.]*?)\\,");
-            Matcher matcherX = patternX.matcher(maxData);
-            Pattern patternY = Pattern.compile("\\,([0-9.]*?)\\,");
-            Matcher matcherY = patternY.matcher(maxData);
-            Pattern patternZ = Pattern.compile("\\,([0-9.]*?)\\)");
-            Matcher matcherZ = patternZ.matcher(maxData);
-            //matcherX finds the number between ( and ,
-            if (matcherX.find()) {
-                maxX = Float.parseFloat(matcherX.group(1));
-            }
-            //matcherY finds the number between , and ,
-            if (matcherY.find()) {
-                maxY = Float.parseFloat(matcherY.group(1));
-            }
-            //matcherZ finds the number between , and )
-            if (matcherZ.find()) {
-                maxZ = Float.parseFloat(matcherZ.group(1));
+        public void onSensorChanged(SensorEvent se) {
+            if (se.sensor.getType() == Sensor.TYPE_LIGHT){
+                output.setText("The Light Sensor Reading is:\n" +  String.valueOf(se.values[0]));
+                if (se.values[0] > maxLight) {
+                    maxLight = se.values[0];
+                    outMax.setText(String.valueOf(maxLight));
+
+                }
             }
         }
     }
 
-    public void onAccuracyChanged(Sensor s, int i) {
+    class AccelerometerSensorEventListener implements SensorEventListener {
+        private TextView output;
+        private TextView outMax;
+        private float maxX = -999.999f;
+        private float maxY = -999.999f;
+        private float maxZ = -999.999f;
 
-    }
-
-    public void onSensorChanged(SensorEvent se) {
-        if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
-            boolean changed = false;
-            output.setText("The Accelerometer Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
-            String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
-            if (se.values[0] > maxX) {
-                maxX = se.values[0];
-                changed = true;
-            }
-            if (se.values[1] > maxY) {
-                maxY = se.values[1];
-                changed = true;
-            }
-            if (se.values[2] > maxZ) {
-                maxZ = se.values[2];
-                changed = true;
-            }
-            if (changed)
-                outMax.setText(maxText);
-        }
-    }
-}
-
-class MagneticSensorEventListener implements SensorEventListener {
-    private TextView output;
-    private TextView outMax;
-    private float maxX = -999.9f;
-    private float maxY = -999.9f;
-    private float maxZ = -999.9f;
-
-    public MagneticSensorEventListener(TextView outputView, TextView outputMax){
-        output = outputView;
-        outMax = outputMax;
-        if (!outMax.getText().toString().equals("0")){
-            String maxData = outMax.getText().toString();
-            Pattern patternX = Pattern.compile("\\(([0-9.]*?)\\,");
-            Matcher matcherX = patternX.matcher(maxData);
-            Pattern patternY = Pattern.compile("\\,([0-9.]*?)\\,");
-            Matcher matcherY = patternY.matcher(maxData);
-            Pattern patternZ = Pattern.compile("\\,([0-9.]*?)\\)");
-            Matcher matcherZ = patternZ.matcher(maxData);
-            if (matcherX.find()) {
-                maxX = Float.parseFloat(matcherX.group(1));
-            }
-            if (matcherY.find()) {
-                maxY = Float.parseFloat(matcherY.group(1));
-            }
-            if (matcherZ.find()) {
-                maxZ = Float.parseFloat(matcherZ.group(1));
+        public AccelerometerSensorEventListener(TextView outputView, TextView outputMax) {
+            output = outputView;
+            outMax = outputMax;
+            //If the maxValue for the sensor exists, then use regex to extract the relevant information
+            if (!outMax.getText().toString().equals("0")){
+                String maxData = outMax.getText().toString();
+                Pattern patternX = Pattern.compile("\\(([0-9.]*?)\\,");
+                Matcher matcherX = patternX.matcher(maxData);
+                Pattern patternY = Pattern.compile("\\,([0-9.]*?)\\,");
+                Matcher matcherY = patternY.matcher(maxData);
+                Pattern patternZ = Pattern.compile("\\,([0-9.]*?)\\)");
+                Matcher matcherZ = patternZ.matcher(maxData);
+                //matcherX finds the number between ( and ,
+                if (matcherX.find()) {
+                    maxX = Float.parseFloat(matcherX.group(1));
+                }
+                //matcherY finds the number between , and ,
+                if (matcherY.find()) {
+                    maxY = Float.parseFloat(matcherY.group(1));
+                }
+                //matcherZ finds the number between , and )
+                if (matcherZ.find()) {
+                    maxZ = Float.parseFloat(matcherZ.group(1));
+                }
             }
         }
-    }
-    public void onAccuracyChanged(Sensor s, int i) {
 
-    }
-
-    public void onSensorChanged(SensorEvent se) {
-        if (se.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
-            boolean changed = false;
-            output.setText("The Magnetic Sensor Reading is: \n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
-            String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
-            if (se.values[0] > maxX) {
-                maxX = se.values[0];
-                changed = true;
-            }
-            if (se.values[1] > maxY) {
-                maxY = se.values[1];
-                changed = true;
-            }
-            if (se.values[2] > maxZ) {
-                maxZ = se.values[2];
-                changed = true;
-            }
-            if (changed)
-                outMax.setText(maxText);
+        public void onAccuracyChanged(Sensor s, int i) {
 
         }
-    }
-}
 
-class RotationalVectorSensorEventListener implements SensorEventListener {
-    private TextView output;
-    private TextView outMax;
-    private float maxX = -999.9f;
-    private float maxY = -999.9f;
-    private float maxZ = -999.9f;
+        public void onSensorChanged(SensorEvent se) {
+            if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+                boolean changed = false;
+                output.setText("The Accelerometer Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
+                String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";;
+                if (se.values[0] > maxX) {
+                    maxX = se.values[0];
+                    changed = true;
+                }
+                if (se.values[1] > maxY) {
+                    maxY = se.values[1];
+                    changed = true;
+                }
+                if (se.values[2] > maxZ) {
+                    maxZ = se.values[2];
+                    changed = true;
+                }
+                if (changed)
+                    outMax.setText(maxText);
 
-    public RotationalVectorSensorEventListener(TextView outputView, TextView outputMax) {
-        output = outputView;
-        outMax = outputMax;
-        if (!outMax.getText().toString().equals("0")){
-            String maxData = outMax.getText().toString();
-            Pattern patternX = Pattern.compile("\\(([0-9.]*?)\\,");
-            Matcher matcherX = patternX.matcher(maxData);
-            Pattern patternY = Pattern.compile("\\,([0-9.]*?)\\,");
-            Matcher matcherY = patternY.matcher(maxData);
-            Pattern patternZ = Pattern.compile("\\,([0-9.]*?)\\)");
-            Matcher matcherZ = patternZ.matcher(maxData);
-            if (matcherX.find()) {
-                maxX = Float.parseFloat(matcherX.group(1));
-            }
-            if (matcherY.find()) {
-                maxY = Float.parseFloat(matcherY.group(1));
-            }
-            if (matcherZ.find()) {
-                maxZ = Float.parseFloat(matcherZ.group(1));
+                //Regardless whether changed or not, pass the point to the graph
+                //Why doesn't android recognize "graph" when below is uncommented?!
+                graph.addPoint(se.values);
+                //Putting the data here to array to be passed to the CSV
+                float[] readings = new float[3];
+                for (int i = 0; i < 3; i++) {
+                    readings[i] = se.values[i];
+                }
+                if (accelReadings.size() < 100 ) {
+                    accelReadings.add(readings);
+                } else {        //now we need to remove the 100th element (first LL element as it's a queue)to add the new reading
+                    accelReadings.remove();
+                    accelReadings.add(readings);
+                }
             }
         }
     }
 
-    public void onAccuracyChanged(Sensor s, int i) {
+    class MagneticSensorEventListener implements SensorEventListener {
+        private TextView output;
+        private TextView outMax;
+        private float maxX = -999.9f;
+        private float maxY = -999.9f;
+        private float maxZ = -999.9f;
 
-    }
+        public MagneticSensorEventListener(TextView outputView, TextView outputMax){
+            output = outputView;
+            outMax = outputMax;
+            if (!outMax.getText().toString().equals("0")){
+                String maxData = outMax.getText().toString();
+                Pattern patternX = Pattern.compile("\\(([0-9.]*?)\\,");
+                Matcher matcherX = patternX.matcher(maxData);
+                Pattern patternY = Pattern.compile("\\,([0-9.]*?)\\,");
+                Matcher matcherY = patternY.matcher(maxData);
+                Pattern patternZ = Pattern.compile("\\,([0-9.]*?)\\)");
+                Matcher matcherZ = patternZ.matcher(maxData);
+                if (matcherX.find()) {
+                    maxX = Float.parseFloat(matcherX.group(1));
+                }
+                if (matcherY.find()) {
+                    maxY = Float.parseFloat(matcherY.group(1));
+                }
+                if (matcherZ.find()) {
+                    maxZ = Float.parseFloat(matcherZ.group(1));
+                }
+            }
+        }
+        public void onAccuracyChanged(Sensor s, int i) {
 
-    public void onSensorChanged(SensorEvent se) {
-        if (se.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR){
-            boolean changed = false;
-            output.setText("The Rotation Vector Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
-            String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
-            if (se.values[0] > maxX) {
-                maxX = se.values[0];
-                changed = true;
-            }
-            if (se.values[1] > maxY) {
-                maxY = se.values[1];
-                changed = true;
-            }
-            if (se.values[2] > maxZ) {
-                maxZ = se.values[2];
-                changed = true;
-            }
-            if (changed)
-                outMax.setText(maxText);
         }
 
+        public void onSensorChanged(SensorEvent se) {
+            if (se.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+                boolean changed = false;
+                output.setText("The Magnetic Sensor Reading is: \n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
+                String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
+                if (se.values[0] > maxX) {
+                    maxX = se.values[0];
+                    changed = true;
+                }
+                if (se.values[1] > maxY) {
+                    maxY = se.values[1];
+                    changed = true;
+                }
+                if (se.values[2] > maxZ) {
+                    maxZ = se.values[2];
+                    changed = true;
+                }
+                if (changed)
+                    outMax.setText(maxText);
+
+            }
+        }
     }
+
+    class RotationalVectorSensorEventListener implements SensorEventListener {
+        private TextView output;
+        private TextView outMax;
+        private float maxX = -999.9f;
+        private float maxY = -999.9f;
+        private float maxZ = -999.9f;
+
+        public RotationalVectorSensorEventListener(TextView outputView, TextView outputMax) {
+            output = outputView;
+            outMax = outputMax;
+            if (!outMax.getText().toString().equals("0")){
+                String maxData = outMax.getText().toString();
+                Pattern patternX = Pattern.compile("\\(([0-9.]*?)\\,");
+                Matcher matcherX = patternX.matcher(maxData);
+                Pattern patternY = Pattern.compile("\\,([0-9.]*?)\\,");
+                Matcher matcherY = patternY.matcher(maxData);
+                Pattern patternZ = Pattern.compile("\\,([0-9.]*?)\\)");
+                Matcher matcherZ = patternZ.matcher(maxData);
+                if (matcherX.find()) {
+                    maxX = Float.parseFloat(matcherX.group(1));
+                }
+                if (matcherY.find()) {
+                    maxY = Float.parseFloat(matcherY.group(1));
+                }
+                if (matcherZ.find()) {
+                    maxZ = Float.parseFloat(matcherZ.group(1));
+                }
+            }
+        }
+
+        public void onAccuracyChanged(Sensor s, int i) {
+
+        }
+
+        public void onSensorChanged(SensorEvent se) {
+            if (se.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR){
+                boolean changed = false;
+                output.setText("The Rotation Vector Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")" );
+                String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
+                if (se.values[0] > maxX) {
+                    maxX = se.values[0];
+                    changed = true;
+                }
+                if (se.values[1] > maxY) {
+                    maxY = se.values[1];
+                    changed = true;
+                }
+                if (se.values[2] > maxZ) {
+                    maxZ = se.values[2];
+                    changed = true;
+                }
+                if (changed)
+                    outMax.setText(maxText);
+            }
+
+        }
+    }
+
 }
