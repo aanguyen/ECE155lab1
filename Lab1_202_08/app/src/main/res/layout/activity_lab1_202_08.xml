@@ -26,13 +26,6 @@
             android:orientation="vertical">
 
 
-            <Button
-                android:id="@+id/fileButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Generate CSV Record for Acc. Sen."
-                />
-
         </LinearLayout>
 
     </ScrollView>

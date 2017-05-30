@@ -71,11 +71,25 @@ public class Lab1_202_08 extends AppCompatActivity {
         setContentView(R.layout.activity_lab1_202_08);
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        //Create all the needed TextViews
-        //Do you guys think this qualifies as code duplication? I feel like some code could be deleted
-        //By creating a function that sets all the things for us, but to me it feels like that's time
-        //That could be better used to do other things
         LinearLayout LL = (LinearLayout) findViewById(R.id.linearLayout);
+
+        graph = new LineGraphView(getApplicationContext(), 100, Arrays.asList("x", "y", "z"));
+        LL.addView(graph); //addView adds the graph to the linear layout
+        graph.setVisibility(View.VISIBLE);
+
+        Button fileButton;
+        fileButton = new Button(getApplicationContext());
+        fileButton.setText("GENERATE CSV RECORD FOR ACC.SEN");
+        fileButton.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View v) {
+                        writeToFile();
+                    }
+                }
+        );
+        LL.addView(fileButton);
+
+        //Create all the needed TextViews
         lightText = new TextView(getApplicationContext());
         lightText.setTextColor(Color.WHITE);
         LL.addView(lightText);
@@ -124,18 +138,6 @@ public class Lab1_202_08 extends AppCompatActivity {
         rotationVectorMaxNumber.setTextColor(Color.WHITE);
         LL.addView(rotationVectorMaxNumber);
 
-        graph = new LineGraphView(getApplicationContext(), 100, Arrays.asList("x", "y", "z"));
-        LL.addView(graph); //addView adds the graph to the linear layout
-        graph.setVisibility(View.VISIBLE);
-
-        Button fileButton = (Button) findViewById(R.id.fileButton);
-        fileButton.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View v) {
-                        writeToFile();
-                    }
-                }
-        );
         //Save all the max readings, and stores them with in a key-value pair
         if(savedInstanceState != null){
             lightMaxNumber.setText(savedInstanceState.getString("maxLight"));
@@ -149,7 +151,7 @@ public class Lab1_202_08 extends AppCompatActivity {
 
         Sensor accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         SensorEventListener accelerometer = new AccelerometerSensorEventListener(accelerometerText, accelerometerMaxNumber);
-        sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
 
         Sensor magneticFieldSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         SensorEventListener magneticField = new MagneticSensorEventListener(magneticFieldText, magneticFieldMaxNumber);
