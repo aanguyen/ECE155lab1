@@ -166,7 +166,7 @@ public class Lab1_202_08 extends AppCompatActivity {
         SensorEventListener rotationVector = new RotationalVectorSensorEventListener(rotationVectorText, rotationVectorMaxNumber);
         sensorManager.registerListener(rotationVector, rotationVectorSensor, SensorManager.SENSOR_DELAY_GAME);
 /*
-        //Sample code made in the lecture. May be discarded. 
+        //Sample code made in the lecture. May be discarded.
         //set highest thresholds to 5 and -5
 
         class myFSM {
@@ -254,7 +254,7 @@ public class Lab1_202_08 extends AppCompatActivity {
         private float maxX = -999.999f;
         private float maxY = -999.999f;
         private float maxZ = -999.999f;
-        private float[] consNum = {0.5f, 0.5f, 0.5f};
+        private float[] consNum = {0.75f, 0.5f, 0.5f};
         private float[] previousNum;
         private float[] tempElem = new float[3];
 
