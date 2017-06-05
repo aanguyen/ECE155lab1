@@ -54,33 +54,7 @@ public class Lab1_202_08 extends AppCompatActivity {
 
             //Initialize a new arraylist for the acclerometer readings
             ArrayList listValues = new ArrayList(accelReadings);
-/*
-            for (int i = 1; i < listValues.size(); i++){
 
-                //This is a constant for which to do the low pass filter.
-                //This constant will need to be adjusted based on the phone
-                float consNum = (float) 0.5;
-                float[] tempElem = {0,0,0};
-                //Now, this is adding the low pass filter
-                //This starts at 1 because it needs the element at index 0
-
-                float[] previousNum = (float[]) listValues.get(i-1);
-                float[] currentNum = (float[]) listValues.get(i);
-                //This divides the difference between the current number and the previous number by the constant
-                for (int x = 0; x < 3; x ++){
-                    if (currentNum[x] > previousNum[x]){
-                        tempElem[x] = (currentNum[x] - previousNum[x])/consNum;
-                    }
-                    else if (currentNum[x] < previousNum[x]){
-                        tempElem[x] = (currentNum[x] + previousNum[x])/consNum;
-                    }
-                    else{
-                        tempElem[x] = currentNum[x];
-                    }
-                }
-                listValues.set(i,tempElem);
-            }
-            */
             for (int i = 0; i < listValues.size(); i++) {   //Size theoretically can be hardcoded to 100 but we'll just be safe here
                 float[] toPrint = (float[]) listValues.get(i);
                 myPrinter.println(String.format("%f,%f,%f", toPrint[0], toPrint[1], toPrint[2]));
@@ -192,6 +166,7 @@ public class Lab1_202_08 extends AppCompatActivity {
         SensorEventListener rotationVector = new RotationalVectorSensorEventListener(rotationVectorText, rotationVectorMaxNumber);
         sensorManager.registerListener(rotationVector, rotationVectorSensor, SensorManager.SENSOR_DELAY_GAME);
 /*
+        //Sample code made in the lecture. May be discarded. 
         //set highest thresholds to 5 and -5
 
         class myFSM {
