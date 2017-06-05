@@ -40,7 +40,10 @@ public class Lab1_202_08 extends AppCompatActivity {
 
     LineGraphView graph;
 
-    private void writeToFile() {
+
+
+
+    private void writeToFile(){
         File myFile;
         PrintWriter myPrinter = null;
         try {
@@ -49,8 +52,35 @@ public class Lab1_202_08 extends AppCompatActivity {
             //Initialize a new printWriter to write to file
             myPrinter = new PrintWriter(myFile);
 
+            //Initialize a new arraylist for the acclerometer readings
             ArrayList listValues = new ArrayList(accelReadings);
+/*
+            for (int i = 1; i < listValues.size(); i++){
 
+                //This is a constant for which to do the low pass filter.
+                //This constant will need to be adjusted based on the phone
+                float consNum = (float) 0.5;
+                float[] tempElem = {0,0,0};
+                //Now, this is adding the low pass filter
+                //This starts at 1 because it needs the element at index 0
+
+                float[] previousNum = (float[]) listValues.get(i-1);
+                float[] currentNum = (float[]) listValues.get(i);
+                //This divides the difference between the current number and the previous number by the constant
+                for (int x = 0; x < 3; x ++){
+                    if (currentNum[x] > previousNum[x]){
+                        tempElem[x] = (currentNum[x] - previousNum[x])/consNum;
+                    }
+                    else if (currentNum[x] < previousNum[x]){
+                        tempElem[x] = (currentNum[x] + previousNum[x])/consNum;
+                    }
+                    else{
+                        tempElem[x] = currentNum[x];
+                    }
+                }
+                listValues.set(i,tempElem);
+            }
+            */
             for (int i = 0; i < listValues.size(); i++) {   //Size theoretically can be hardcoded to 100 but we'll just be safe here
                 float[] toPrint = (float[]) listValues.get(i);
                 myPrinter.println(String.format("%f,%f,%f", toPrint[0], toPrint[1], toPrint[2]));
@@ -67,6 +97,7 @@ public class Lab1_202_08 extends AppCompatActivity {
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lab1_202_08);
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -155,12 +186,51 @@ public class Lab1_202_08 extends AppCompatActivity {
 
         Sensor magneticFieldSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         SensorEventListener magneticField = new MagneticSensorEventListener(magneticFieldText, magneticFieldMaxNumber);
-        sensorManager.registerListener(magneticField, magneticFieldSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(magneticField, magneticFieldSensor, SensorManager.SENSOR_DELAY_GAME);
 
         Sensor rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         SensorEventListener rotationVector = new RotationalVectorSensorEventListener(rotationVectorText, rotationVectorMaxNumber);
-        sensorManager.registerListener(rotationVector, rotationVectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(rotationVector, rotationVectorSensor, SensorManager.SENSOR_DELAY_GAME);
+/*
+        //set highest thresholds to 5 and -5
 
+        class myFSM {
+            //enum FSMstates(WAIT, RISE, FALL, STABLE, DETERMINED);
+            // private FSMstates myStates;
+
+            //Signature parameters,
+            // enum Signatures(LEFT, RIGHT, UNDETERMINED);
+            //   private Signatures mySig;
+
+            private final float[] THRESHOLD_RIGHT = (0.5f,0.8f,0.2f);
+
+            private int sampleCounter;
+            private final int SAMPLE_COUNTER_DEFAULT = 40;
+            private TextView myDisplay;
+
+
+            private float prev_reading = 0;
+
+            //constructor and set parameters
+            public myFSM(TextView tv) {
+
+                //      myStates = FSMStates.WAIT;
+                //    mySig = Signatures.UNDETERMINED;
+                sampleCounter = SAMPLE_COUNTER_DEFAULT;
+                myDisplay = tv;
+            }
+
+            public void activateFSM(float accInput) {
+
+                float accSlope = accInput - prev_reading;
+                //    switch(myStates){
+                //      case WAIT:
+                //        Log.d("FSM Says:", String.format("Waiting, Slope: %f", accSlope);
+                //      if(accSlope >= THRESHOLD_RIGHT[0]){
+                //        myStates = FSMStates.RISE;
+            }
+        }
+        */
     }
     public void onSaveInstanceState(Bundle savedInstanceState){
         super.onSaveInstanceState(savedInstanceState);
@@ -209,11 +279,14 @@ public class Lab1_202_08 extends AppCompatActivity {
         private float maxX = -999.999f;
         private float maxY = -999.999f;
         private float maxZ = -999.999f;
+        private float[] consNum = {0.5f, 0.5f, 0.5f};
+        private float[] previousNum;
+        private float[] tempElem = new float[3];
 
         public AccelerometerSensorEventListener(TextView outputView, TextView outputMax) {
             output = outputView;
             outMax = outputMax;
-            //If the maxValue for the sensor exists, then use regex to extract the relevant information
+            //If the maxValue for the sensor exists, then use regex to extract the relevant information from the TextView
             if (!outMax.getText().toString().equals("0")){
                 String maxData = outMax.getText().toString();
                 Pattern patternX = Pattern.compile("\\(([0-9.]*?)\\,");
@@ -260,14 +333,34 @@ public class Lab1_202_08 extends AppCompatActivity {
                 }
                 if (changed)
                     outMax.setText(maxText);
+                //If this is the first number, set that as the previous number
+                if (previousNum == null ){
+                    previousNum = se.values;
+                }
+                else{
+                    //This goes through the X,Y,and Z values
+                    for (int i = 0; i < 3; i ++){
+                        //This just finds the difference between the two and divides it by a constant number
+                        //The constant number is a decimal so it's easier to specify, so I multiplied it
+                        if (se.values[i] > previousNum[i]){
+                            tempElem[i] = (se.values[i] - previousNum[i])*consNum[i];
+                        }
+                        else if (se.values[i] < previousNum[i]){
+                            tempElem[i] = (se.values[i] + previousNum[i])*consNum[i];
+                        }
+                        else{
+                            tempElem[i] = se.values[i];
+                        }
+                    }
+                }
 
                 //Regardless whether changed or not, pass the point to the graph
                 //Why doesn't android recognize "graph" when below is uncommented?!
-                graph.addPoint(se.values);
+                graph.addPoint(tempElem);
                 //Putting the data here to array to be passed to the CSV
                 float[] readings = new float[3];
                 for (int i = 0; i < 3; i++) {
-                    readings[i] = se.values[i];
+                    readings[i] = tempElem[i];
                 }
                 if (accelReadings.size() < 100 ) {
                     accelReadings.add(readings);
