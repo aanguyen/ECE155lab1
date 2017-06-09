@@ -36,11 +36,10 @@ public class Lab1_202_08 extends AppCompatActivity {
     public TextView gesture;
     public TextView accelerometerText, accelerometerMaxText, accelerometerMaxNumber;
     private myFSM FSM_UP;
-
-
+    public static float [] coordinates = new float[3];
+    public TextView coordinView;
 
     LineGraphView graph;
-
 
     private void writeToFile() {
         File myFile;
@@ -58,6 +57,8 @@ public class Lab1_202_08 extends AppCompatActivity {
                 float[] toPrint = (float[]) listValues.get(i);
                 myPrinter.println(String.format("%f,%f,%f", toPrint[0], toPrint[1], toPrint[2]));
             }
+
+
         } catch (IOException e) {
             Log.d("Lab 1 Error:", e.toString());
         } finally {
@@ -108,6 +109,12 @@ public class Lab1_202_08 extends AppCompatActivity {
         accelerometerMaxNumber.setTextColor(Color.WHITE);
         LL.addView(accelerometerMaxNumber);
 
+        coordinView = new TextView(getApplicationContext());
+        coordinView.setTextColor(Color.WHITE);
+        coordinView.setText(Float.toString(coordinates[0]));
+        LL.addView(coordinView);
+
+
         gesture = new TextView(getApplicationContext());
         gesture.setTextColor(Color.WHITE);
         LL.addView(gesture);
@@ -122,6 +129,9 @@ public class Lab1_202_08 extends AppCompatActivity {
         sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
 
         FSM_UP = new myFSM(gesture);
+        //FSM_UP.activateFSM(coordinates[2]);
+        //gesture.setText(Float.toString(coordinates[2]));
+
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -132,7 +142,8 @@ public class Lab1_202_08 extends AppCompatActivity {
 
     //Note: All se.values are given to us by Android OS as floats
 
-    class AccelerometerSensorEventListener implements SensorEventListener {
+    public class AccelerometerSensorEventListener implements SensorEventListener {
+
         private TextView output;
         private TextView outMax;
         private TextView gesture;
@@ -175,12 +186,18 @@ public class Lab1_202_08 extends AppCompatActivity {
 
         }
 
-        public float onSensorChanged(SensorEvent se) {
+        public void onSensorChanged(SensorEvent se) {
             if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 boolean changed = false;
-                output.setText("The Accelerometer Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")");
+
+                for (int i = 0; i < 3; i++) {
+                    coordinates[i] = se.values[i];
+                }
+
+                output.setText("The Accelerometer Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", coordinates[0], coordinates[1], coordinates[2])) + ")");
                 String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
-                ;
+
+
                 if (se.values[0] > maxX) {
                     maxX = se.values[0];
                     changed = true;
@@ -231,8 +248,10 @@ public class Lab1_202_08 extends AppCompatActivity {
                     accelReadings.remove();
                     accelReadings.add(readings);
                 }
-                return tempElem[2];
+                FSM_UP.activateFSM(tempElem[2]);
+
             }
         }
+
     }
 }

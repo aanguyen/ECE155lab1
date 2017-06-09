@@ -22,9 +22,9 @@ public class myFSM {
     //1st threshold: minimum slope of the response onset
     //2nd threshold: the minimum response max amplitude of the first peak
     //3rd threshold: the maximum response amplitude after settling for 30 samples.
-    private final float[] THRESHOLD_UP = {-0.625f, 15f, 4f};
+    private final float[] THRESHOLD_UP = {-4f, 15f, 4f};
     //Will need to change the values
-    private final float[] THRESHOLD_DOWN = {3f, 10f, -10f};
+    private final float[] THRESHOLD_DOWN = {4f, 10f, -10f};
 
     //This is the sample counter.
     //We expect the reading to settle down to near zero after 30 samples since the
