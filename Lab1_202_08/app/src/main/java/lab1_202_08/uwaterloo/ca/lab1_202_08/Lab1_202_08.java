@@ -35,6 +35,8 @@ public class Lab1_202_08 extends AppCompatActivity {
     //I put all the TextView and Graph at the top to make them global variables in the bundle
     public TextView gesture;
     public TextView accelerometerText, accelerometerMaxText, accelerometerMaxNumber;
+    private myFSM FSM_UP;
+
 
 
     LineGraphView graph;
@@ -119,6 +121,7 @@ public class Lab1_202_08 extends AppCompatActivity {
         SensorEventListener accelerometer = new AccelerometerSensorEventListener(accelerometerText, accelerometerMaxNumber, gesture);
         sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
 
+        FSM_UP = new myFSM(gesture);
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -139,7 +142,6 @@ public class Lab1_202_08 extends AppCompatActivity {
         private final float constant = 25;
         private float[] previousNum;
         private float[] tempElem = new float[3];
-        private myFSM FSM_UP;
 
         public AccelerometerSensorEventListener(TextView outputView, TextView outputMax, TextView gestureTV) {
             output = outputView;
@@ -173,7 +175,7 @@ public class Lab1_202_08 extends AppCompatActivity {
 
         }
 
-        public void onSensorChanged(SensorEvent se) {
+        public float onSensorChanged(SensorEvent se) {
             if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 boolean changed = false;
                 output.setText("The Accelerometer Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")");
@@ -212,14 +214,13 @@ public class Lab1_202_08 extends AppCompatActivity {
                     }
                 }
                 //gesture.setText("This needs to change");
-                FSM_UP = new myFSM(gesture);
 
                 //Regardless whether changed or not, pass the point to the graph
                 //Why doesn't android recognize "graph" when below is uncommented?!
                 graph.addPoint(tempElem);
                 //Putting the data here to array to be passed to the CSV
 
-                FSM_UP.activateFSM(tempElem[2]);
+
                 float[] readings = new float[3];
                 for (int i = 0; i < 3; i++) {
                     readings[i] = tempElem[i];
@@ -230,6 +231,7 @@ public class Lab1_202_08 extends AppCompatActivity {
                     accelReadings.remove();
                     accelReadings.add(readings);
                 }
+                return tempElem[2];
             }
         }
     }
