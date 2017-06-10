@@ -35,9 +35,8 @@ public class Lab1_202_08 extends AppCompatActivity {
     //I put all the TextView and Graph at the top to make them global variables in the bundle
     public TextView gesture;
     public TextView accelerometerText, accelerometerMaxText, accelerometerMaxNumber;
-    private myFSM FSM_UP;
-    public static float [] coordinates = new float[3];
-    public TextView coordinView;
+    private FSM_Y FSM_UP;
+    private FSM_X FSM_RIGHT;
 
     LineGraphView graph;
 
@@ -109,11 +108,6 @@ public class Lab1_202_08 extends AppCompatActivity {
         accelerometerMaxNumber.setTextColor(Color.WHITE);
         LL.addView(accelerometerMaxNumber);
 
-        coordinView = new TextView(getApplicationContext());
-        coordinView.setTextColor(Color.WHITE);
-        coordinView.setText(Float.toString(coordinates[0]));
-        LL.addView(coordinView);
-
 
         gesture = new TextView(getApplicationContext());
         gesture.setTextColor(Color.WHITE);
@@ -128,7 +122,8 @@ public class Lab1_202_08 extends AppCompatActivity {
         SensorEventListener accelerometer = new AccelerometerSensorEventListener(accelerometerText, accelerometerMaxNumber, gesture);
         sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
 
-        FSM_UP = new myFSM(gesture);
+        FSM_UP = new FSM_Y(gesture);
+        FSM_RIGHT = new FSM_X(gesture);
         //FSM_UP.activateFSM(coordinates[2]);
         //gesture.setText(Float.toString(coordinates[2]));
 
@@ -190,11 +185,7 @@ public class Lab1_202_08 extends AppCompatActivity {
             if (se.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 boolean changed = false;
 
-                for (int i = 0; i < 3; i++) {
-                    coordinates[i] = se.values[i];
-                }
-
-                output.setText("The Accelerometer Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", coordinates[0], coordinates[1], coordinates[2])) + ")");
+                output.setText("The Accelerometer Sensor Reading is:\n(" + (String.format("%.2f, %.2f, %.2f", se.values[0], se.values[1], se.values[2])) + ")");
                 String maxText = "(" + (String.format("%.2f, %.2f, %.2f", maxX, maxY, maxZ)) + ")";
 
 
@@ -249,6 +240,7 @@ public class Lab1_202_08 extends AppCompatActivity {
                     accelReadings.add(readings);
                 }
                 FSM_UP.activateFSM(tempElem[2]);
+                FSM_RIGHT.activateFSM(tempElem[2]);
 
             }
         }
