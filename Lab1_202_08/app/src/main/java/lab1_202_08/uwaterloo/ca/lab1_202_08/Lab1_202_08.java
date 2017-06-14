@@ -240,7 +240,7 @@ public class Lab1_202_08 extends AppCompatActivity {
                     accelReadings.add(readings);
                 }
                 FSM_UP.activateFSM(tempElem[2]);
-                FSM_RIGHT.activateFSM(tempElem[2]);
+               // FSM_RIGHT.activateFSM(tempElem[2]);
 
             }
         }

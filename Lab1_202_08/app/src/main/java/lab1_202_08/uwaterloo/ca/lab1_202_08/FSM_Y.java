@@ -22,15 +22,15 @@ public class FSM_Y {
     //2nd threshold: the minimum response max amplitude of the first peak
     //3rd threshold: the maximum response amplitude after settling for 30 samples.
 
-    private final float[] THRESHOLD_UP = {-4f, 15f, 4f};
+    private final float[] THRESHOLD_UP = {-2f, 15f, 4f};
     //Will need to change the values
-    private final float[] THRESHOLD_DOWN = {4f, 10f, -10f};
+    private final float[] THRESHOLD_DOWN = {2f, -10f, 3f};
 
     //This is the sample counter.
     //We expect the reading to settle down to near zero after 30 samples since the
     //occurrence of the minimum of the 1st response peak.
     private int sampleCounter;
-    private final int SAMPLE_COUNTER_DEFAULT = 30;
+    private final int SAMPLE_COUNTER_DEFAULT = 15;
 
     //Keep the most recent historical reading so we can calculate the most recent slope
     private float previousReading;
