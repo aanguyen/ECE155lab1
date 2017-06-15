@@ -1,154 +1,200 @@
 package lab1_202_08.uwaterloo.ca.lab1_202_08;
 
-/**
- * Created by Janet Liu on 6/10/2017.
- */
-
 import android.util.Log;
 import android.widget.TextView;
+
 
 public class FSM_X {
 
     //FSM parameters
-    enum FSMStates{WAIT, RISE, FALL, STABLE, DETERMINED};
+    enum FSMStates{WAIT, RIGHT, LEFT, STABLE, DETERMINED};
     private FSMStates myStates;
 
     //Signature parameters
-    enum Signatures{RIGHT, LEFT, UNDETERMINED};
+    enum Signatures{UP, DOWN, UNDETERMINED};
     private Signatures mySig;
+
+    private float[] min = {0,0};
+    private float[] max = {-10,0};
 
     //These are the characteristic thresholds of my choice.
     //1st threshold: minimum slope of the response onset
     //2nd threshold: the minimum response max amplitude of the first peak
     //3rd threshold: the maximum response amplitude after settling for 30 samples.
 
-    private final float[] THRESHOLD_RIGHT = {-4f, 15f, 4f};
+    private final float[] THRESHOLD_UP = {20f, 15f, 4f};
     //Will need to change the values
-    private final float[] THRESHOLD_LEFT = {4f, 10f, -10f};
+    private final float[] THRESHOLD_DOWN = {20f, -10f, 3f};
 
     //This is the sample counter.
-    //We expect the reading to settle LEFT to near zero after 30 samples since the
+    //We expect the reading to settle down to near zero after 30 samples since the
     //occurrence of the minimum of the 1st response peak.
-    private int sampleCounter;
-    private final int SAMPLE_COUNTER_DEFAULT = 30;
+    private int sampleCounter = 0;
+    //private final int SAMPLE_COUNTER_DEFAULT = 15;
 
     //Keep the most recent historical reading so we can calculate the most recent slope
     private float previousReading;
 
     //Keep a reference of the TextView from the layout.
     private TextView DirectionTV;
+    private TextView maxText;
+    private TextView minText;
+
+
 
 
     //Constructor.  FSM is started into WAIT state.
-    public FSM_X(TextView displayTV){
+    public FSM_X(TextView displayTV, TextView maxText, TextView minText){
         myStates = FSMStates.WAIT;
         mySig = Signatures.UNDETERMINED;
-        sampleCounter = SAMPLE_COUNTER_DEFAULT;
+        //sampleCounter = SAMPLE_COUNTER_DEFAULT;
         previousReading = 0;
         DirectionTV = displayTV;
+        this.maxText = maxText;
+        this.maxText.setText(Float.toString(max[0]));
+        this.minText = minText;
+        this.minText.setText(Float.toString(min[0]));
         //DirectionTV.setText("The FSM changed this");
     }
+
 
     //Resetting the FSM back to the initial state
     public void resetFSM(){
         myStates = FSMStates.WAIT;
         mySig = Signatures.UNDETERMINED;
-        sampleCounter = SAMPLE_COUNTER_DEFAULT;
         previousReading = 0;
     }
 
     //This is the main FSM body
     public void activateFSM(float accInput){
-
+        // increment counter
+        sampleCounter++;
         //First, calculate the slope between the most recent input and the
         //most recent historical readings
         float accSlope = accInput - previousReading;
+
+        if (sampleCounter - max[1] > 30) {
+            max[0] = 0;
+        }
+        if (sampleCounter - min[1] > 30){
+            min[0] = 0;
+        }
+
+        if (accInput > max[0]){
+            max[0] = accInput;
+            max[1] = sampleCounter;
+        }
+        else if (accInput < min[0]){
+            min[0] = accInput;
+            min[1] = sampleCounter;
+        }
+
+        maxText.setText(Float.toString(max[0]));
+        minText.setText(Float.toString(min[0]));
 
         //Then, implement the state flow.
         switch(myStates){
 
             case WAIT:
-                //To check_RIGHT, implement this is the_RIGHT transition
+                //To check UP, implement this is the UP transition
 
-                //DirectionTV.setText("The FSM state is at WAIT");
+
+                DirectionTV.setText("The FSM state is at WAIT");
 
                 //DirectionTV.setText("The accSlope is at :" + Float.toString(accSlope));
 
-                //If the slope is negative, then that is the first bump of the rise case.
-                if(accSlope < THRESHOLD_RIGHT[0]){
-                    myStates = FSMStates.RISE;
-                    //DirectionTV.setText("The FSM state is at WAIT but it's rising!!");
+                //If the slope is negative, then that is the first bump of the RIGHT case.
+
+
+                if ((max[0] - min[0]) > THRESHOLD_UP[0]){
+                    //Gesture detected.
+                    //DirectionTV.setText(Float.toString(accInput));
+                    if (accInput > 2) {
+                        myStates = FSMStates.LEFT;
+                    }
+                    else if (accInput  < -2) {
+                        myStates = FSMStates.RIGHT;
+                    }
                 }
 
-                //This is for the first bump of the LEFT
-                if(accSlope > THRESHOLD_LEFT[0]){
-                    myStates = FSMStates.FALL;
-                    //DirectionTV.setText("The FSM state is at WAIT but it's falling!!");
-                }
+                /*if(accSlope >= 0){
+
+                    if(previousReading >= THRESHOLD_UP[1]){
+                        myStates = FSMStates.STABLE;
+                    }
+                    else{
+                        myStates = FSMStates.DETERMINED;
+                        mySig = Signatures.UNDETERMINED;
+                    }
+
+                }*/
 
                 break;
 
-            case FALL:
+            case LEFT:
 
-                //DirectionTV.setText("FALL");
+                DirectionTV.setText("LEFT");
 
+                sampleCounter = 0;
+                for (int i = 0; i < 2; i++){
+                    min[i] = 0;
+                    max[i] = 0;
+                }
+                if (accInput < 2 && accInput > -2) {
+                    myStates = FSMStates.WAIT;
+                }
                 //crossing the minima
-                if(accSlope <= 0){
-
-                    if(previousReading <= THRESHOLD_LEFT[1]){
-                        myStates = FSMStates.STABLE;
-                    }
-                    else{
-                        myStates = FSMStates.DETERMINED;
-                        mySig = Signatures.UNDETERMINED;
-                    }
-
-                }
+//                if(accSlope <= 0){
+//
+//                    if(previousReading <= THRESHOLD_DOWN[1]){
+//                        myStates = FSMStates.STABLE;
+//                    }
+//                    else{
+//                        myStates = FSMStates.DETERMINED;
+//                        mySig = Signatures.UNDETERMINED;
+//                    }
+//
+//                }
 
                 break;
 
-            case RISE:
-                //This part is for the_RIGHT gesture
-                //If the slope is positive, it is rising
+            case RIGHT:
 
-                //DirectionTV.setText("The state is RISING");
-                if(accSlope >= 0){
-
-                    if(previousReading >= THRESHOLD_RIGHT[1]){
-                        myStates = FSMStates.STABLE;
-                    }
-                    else{
-                        myStates = FSMStates.DETERMINED;
-                        mySig = Signatures.UNDETERMINED;
-                    }
-
+                DirectionTV.setText("RIGHT");
+                sampleCounter = 0;
+                for (int i = 0; i < 2; i++) {
+                    min[i] = 0;
+                    max[i] = 0;
+                }
+                if (accInput < 2 && accInput > -2) {
+                    myStates = FSMStates.WAIT;
                 }
                 break;
 
             case STABLE:
 
                 //This part is to wait for the stabilization.
-                //Count LEFT from 30 to 0.
+                //Count down from 30 to 0.
                 //DirectionTV.setText("The FSM is at state STABLE");
-                sampleCounter--;
+
 
                 //At zero, check the threshold and determine the gesture.
-                if(sampleCounter == 0){
-
-                    myStates = FSMStates.DETERMINED;
-
-                    //You will have to modify this portion to incorporate the_RIGHT gesture...
-                    //Think about how to do it.  You may have to re-think about the state transition here...
-                    if(Math.abs(accInput) < THRESHOLD_RIGHT[2]){
-                        mySig = Signatures.RIGHT;
-                    }
-                    else if(Math.abs(accInput) < THRESHOLD_LEFT[2]){
-                        mySig = Signatures.LEFT;
-                    }
-                    else{
-                        mySig = Signatures.UNDETERMINED;
-                    }
-                }
+//                if(sampleCounter == 0){
+//
+//                    myStates = FSMStates.DETERMINED;
+//
+//                    //You will have to modify this portion to incorporate the UP gesture...
+//                    //Think about how to do it.  You may have to re-think about the state transition here...
+//                    if(Math.abs(accInput) < THRESHOLD_UP[2]){
+//                        mySig = Signatures.UP;
+//                    }
+//                    else if(Math.abs(accInput) < THRESHOLD_DOWN[2]){
+//                        mySig = Signatures.DOWN;
+//                    }
+//                    else{
+//                        mySig = Signatures.UNDETERMINED;
+//                    }
+//                }
 
                 break;
 
@@ -170,11 +216,13 @@ public class FSM_X {
             default:
                 resetFSM();
                 break;
+
         }
 
         //After every FSM iteration, make sure to record the input as the most recent
         //history reading.
         previousReading = accInput;
+
 
     }
 

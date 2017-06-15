@@ -34,8 +34,10 @@ public class Lab1_202_08 extends AppCompatActivity {
     public static Queue accelReadings = new LinkedList();
     //I put all the TextView and Graph at the top to make them global variables in the bundle
     public TextView gesture;
+    public TextView maxText;
+    public TextView minText;
     public TextView accelerometerText, accelerometerMaxText, accelerometerMaxNumber;
-    private FSM_Y FSM_UP;
+    private FSM_Y FSM_MY_FSM;
     private FSM_X FSM_RIGHT;
 
     LineGraphView graph;
@@ -112,6 +114,12 @@ public class Lab1_202_08 extends AppCompatActivity {
         gesture = new TextView(getApplicationContext());
         gesture.setTextColor(Color.WHITE);
         LL.addView(gesture);
+        maxText = new TextView(getApplicationContext());
+        maxText.setTextColor(Color.WHITE);
+        LL.addView(maxText);
+        minText = new TextView(getApplicationContext());
+        minText.setTextColor(Color.WHITE);
+        LL.addView(minText);
 
         //Save all the max readings, and stores them with in a key-value pair
         if (savedInstanceState != null) {
@@ -122,8 +130,8 @@ public class Lab1_202_08 extends AppCompatActivity {
         SensorEventListener accelerometer = new AccelerometerSensorEventListener(accelerometerText, accelerometerMaxNumber, gesture);
         sensorManager.registerListener(accelerometer, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
 
-        FSM_UP = new FSM_Y(gesture);
-        FSM_RIGHT = new FSM_X(gesture);
+        FSM_MY_FSM = new FSM_Y(gesture, maxText, minText);
+        FSM_RIGHT = new FSM_X(gesture, maxText, minText);
         //FSM_UP.activateFSM(coordinates[2]);
         //gesture.setText(Float.toString(coordinates[2]));
 
@@ -239,8 +247,8 @@ public class Lab1_202_08 extends AppCompatActivity {
                     accelReadings.remove();
                     accelReadings.add(readings);
                 }
-                FSM_UP.activateFSM(tempElem[2]);
-               // FSM_RIGHT.activateFSM(tempElem[2]);
+                FSM_MY_FSM.activateFSM(tempElem[2], tempElem[0]);
+
 
             }
         }
