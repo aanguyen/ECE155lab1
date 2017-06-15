@@ -113,6 +113,7 @@ public class Lab1_202_08 extends AppCompatActivity {
 
         gesture = new TextView(getApplicationContext());
         gesture.setTextColor(Color.WHITE);
+        gesture.setTextSize(35);
         LL.addView(gesture);
         maxText = new TextView(getApplicationContext());
         maxText.setTextColor(Color.WHITE);
