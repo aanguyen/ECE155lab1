@@ -13,20 +13,16 @@
         app:layout_constraintGuide_begin="41dp"
         android:orientation="vertical" />
 
-    <ScrollView
+    <RelativeLayout
+
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/relativeLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <RelativeLayout
-            android:id="@+id/relativeLayout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
 
-        </RelativeLayout>
+    </RelativeLayout>
 
-    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
