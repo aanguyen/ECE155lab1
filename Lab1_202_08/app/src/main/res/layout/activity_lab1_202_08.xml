@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="lab1_202_08.uwaterloo.ca.lab1_202_08.Lab1_202_08">
+    tools:context="lab1_202_08.uwaterloo.ca.lab3_202_08.Lab1_202_08">
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -15,18 +15,17 @@
 
     <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scroll"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </ScrollView>
 
