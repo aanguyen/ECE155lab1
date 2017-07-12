@@ -32,13 +32,14 @@ public class Lab1_202_08 extends AppCompatActivity {
         RL.getLayoutParams().height = 1440;
         RL.getLayoutParams().width = 1440;
         RL.setBackgroundResource(R.drawable.gameboard);
-        //Create all the needed TextView
 
+        //Create all the needed TextView
         gesture = new TextView(getApplicationContext());
         gesture.setTextColor(Color.BLACK);
         gesture.setTextSize(35);
         RL.addView(gesture);
 
+        //Sets up the game task, so it is called every 50 milliseconds
         GameLoopTask myGameLoopTask = new GameLoopTask(this,RL,getApplicationContext());
         Timer myGameLoop = new Timer();
         myGameLoop.schedule(myGameLoopTask,50,50);
